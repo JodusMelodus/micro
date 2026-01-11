@@ -139,3 +139,32 @@ fn enum_conversion() {
 
     assert_eq!(a2, a);
 }
+
+#[test]
+fn multiple() {
+    struct Dog1 {
+        id: i32,
+    }
+
+    struct Dog2 {
+        id: i32,
+    }
+
+    #[derive(FromDTO, PartialEq, Debug)]
+    #[from(Dog1)]
+    #[from(Dog2)]
+    struct Dog {
+        id: i32,
+    }
+
+    let d1 = Dog1 { id: 1 };
+    let d2 = Dog2 { id: 2 };
+    let real_dog1 = Dog { id: 1 };
+    let real_dog2 = Dog { id: 2 };
+
+    let dog1: Dog = d1.into();
+    let dog2: Dog = d2.into();
+
+    assert_eq!(dog1, real_dog1);
+    assert_eq!(dog2, real_dog2);
+}
