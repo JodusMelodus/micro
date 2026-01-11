@@ -7,4 +7,9 @@ description = "Playground for macros which may result in a useful macro"
 license = "MIT"
 repository = "https://github.com/JodusMelodus/micro"
 
+[lib]
+proc-macro = true
+
 [dependencies]
+quote = "1.0"
+syn = { version = "2.0", features = ["full", "extra-traits"] }
