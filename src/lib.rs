@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput, Fields, Path, parse_macro_input};
+use syn::{Data, DeriveInput, Fields, Path, Type, parse_macro_input};
 
 #[proc_macro_derive(FromDTO, attributes(from))]
 pub fn from_dto_derive(input: TokenStream) -> TokenStream {
@@ -28,19 +28,40 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
         panic!("FromDTO can only be used on structs");
     };
 
-    let field_idents = fields.iter().map(|f| &f.ident);
+    let field_mappings = fields.iter().map(|f| {
+        let field_name = &f.ident;
+        let field_type = &f.ty;
+
+        if is_type_name(field_type, "Vec") {
+            quote! {
+                #field_name: value.#field_name.into_iter().map(Into::into).collect()
+            }
+        } else if is_type_name(field_type, "Option") {
+            quote! {
+                #field_name: value.#field_name.into_iter().map(Into::into).collect()
+            }
+        } else {
+            quote! {#field_name: value.#field_name.into()}
+        }
+    });
 
     let output = quote! {
         impl From<#path> for #name {
             fn from(value: #path) -> Self {
                 Self {
-                    #(
-                        #field_idents: value.#field_idents.into(),
-                    )*
+                    #( #field_mappings,)*
                 }
             }
         }
     };
 
     TokenStream::from(output)
+}
+
+fn is_type_name(ty: &Type, name: &str) -> bool {
+    if let Type::Path(tp) = ty {
+        tp.path.segments.iter().any(|s| s.ident == name)
+    } else {
+        false
+    }
 }
