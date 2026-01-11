@@ -86,3 +86,56 @@ fn conversion_with_primitive_vec() {
 
     assert_eq!(t2, t);
 }
+
+#[test]
+fn enum_conversion() {
+    struct Dog1 {
+        name: String,
+        age: u8,
+    }
+
+    struct Cat1 {
+        name: String,
+        age: u8,
+    }
+
+    enum Animal1 {
+        Dog(Dog1),
+        Cat(Cat1),
+    }
+
+    let a1 = Animal1::Cat(Cat1 {
+        name: "Benjamin".to_string(),
+        age: 5,
+    });
+
+    #[derive(FromDTO, PartialEq, Debug)]
+    #[from(Dog1)]
+    struct Dog2 {
+        name: String,
+        age: u8,
+    }
+
+    #[derive(FromDTO, PartialEq, Debug)]
+    #[from(Cat1)]
+    struct Cat2 {
+        name: String,
+        age: u8,
+    }
+
+    #[derive(FromDTO, PartialEq, Debug)]
+    #[from(Animal1)]
+    enum Animal2 {
+        Dog(Dog2),
+        Cat(Cat2),
+    }
+
+    let a2 = Animal2::Cat(Cat2 {
+        name: "Benjamin".to_string(),
+        age: 5,
+    });
+
+    let a: Animal2 = a1.into();
+
+    assert_eq!(a2, a);
+}
