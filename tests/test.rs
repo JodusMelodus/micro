@@ -7,7 +7,7 @@ fn test1() {
         age: u8,
     }
 
-    #[derive(FromDTO)]
+    #[derive(FromDTO, PartialEq, Debug)]
     #[from(Test1)]
     struct Test2 {
         name: String,
@@ -19,6 +19,12 @@ fn test1() {
         age: 5,
     };
 
-    let t2: Test2 = t1.into();
-}
+    let t2 = Test2 {
+        name: "John".to_string(),
+        age: 5,
+    };
 
+    let t: Test2 = t1.into();
+
+    assert_eq!(t2, t);
+}
