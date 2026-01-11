@@ -34,11 +34,11 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
 
         if is_type_name(field_type, "Vec") {
             quote! {
-                #field_name: value.#field_name.into_iter().map(Into::into).collect()
+                #field_name: value.#field_name.into_iter().map(Into::into).collect::<#field_type>()
             }
         } else if is_type_name(field_type, "Option") {
             quote! {
-                #field_name: value.#field_name.into_iter().map(Into::into).collect()
+                #field_name: value.#field_name.map(Into::into)
             }
         } else {
             quote! {#field_name: value.#field_name.into()}
