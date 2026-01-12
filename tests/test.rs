@@ -89,18 +89,12 @@ fn conversion_with_primitive_vec() {
 
 #[test]
 fn enum_conversion() {
-    struct Dog1 {
-        name: String,
-        age: u8,
-    }
-
     struct Cat1 {
         name: String,
         age: u8,
     }
 
     enum Animal1 {
-        Dog(Dog1),
         Cat(Cat1),
     }
 
@@ -109,12 +103,6 @@ fn enum_conversion() {
         age: 5,
     });
 
-    #[derive(FromDTO, PartialEq, Debug)]
-    #[from(Dog1)]
-    struct Dog2 {
-        name: String,
-        age: u8,
-    }
 
     #[derive(FromDTO, PartialEq, Debug)]
     #[from(Cat1)]
@@ -126,7 +114,6 @@ fn enum_conversion() {
     #[derive(FromDTO, PartialEq, Debug)]
     #[from(Animal1)]
     enum Animal2 {
-        Dog(Dog2),
         Cat(Cat2),
     }
 
@@ -186,4 +173,23 @@ fn generic() {
     let g: Gen2<i32> = g1.into();
 
     assert_eq!(g2, g);
+}
+
+#[test]
+fn option_vec() {
+    struct A {
+        a: Option<Vec<u8>>,
+    }
+
+    #[derive(FromDTO, PartialEq, Debug)]
+    #[from(A)]
+    struct B {
+        a: Option<Vec<u16>>,
+    }
+
+    let a = A { a: Some(vec![5]) };
+    let b = B { a: Some(vec![5]) };
+    let c: B = a.into();
+
+    assert_eq!(b, c);
 }

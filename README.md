@@ -70,6 +70,17 @@ pub struct Library {
     pub metadata: Option<Metadata>,  // Handled via .map(Into::into)
 }
 ```
+### Nested Collections (Option + Vec)
+Converting APIs often involves deeply nested optional collections, such as `Option<Vec<T>>`. Since Rust's `Into` trait does not automatically reach through multiple layers of containers, `FromDTO` detects these patterns and generates the necessary mapping code automatically.
+
+```rust
+#[derive(FromDTO)]
+#[from(external::TrackDTO)]
+pub struct Track {
+    // Generates: value.contributors.map(|v| v.into_iter().map(Into::into).collect())
+    pub contributors: Option<Vec<Artist>>, 
+}
+```
 
 ### How it Works
 The `FromDTO` macro inspects your struct or enum at compile time and generates a `From<Source>` implementation:

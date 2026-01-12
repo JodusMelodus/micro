@@ -31,8 +31,12 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
                 let field_mappings = fields.iter().map(|f| {
                     let field_name = &f.ident;
                     let field_type = &f.ty;
-            
-                    if is_type_name(field_type, "Vec") {
+
+                    if let Some(inner_vec_type) = get_inner_type_from_option_vec(field_type) {
+                        quote!{
+                            #field_name: value.#field_name.map(|v| v.into_iter().map(Into::into).collect::<#inner_vec_type>())
+                        }
+                    }else if is_type_name(field_type, "Vec") {
                         quote! {
                             #field_name: value.#field_name.into_iter().map(Into::into).collect::<#field_type>()
                         }
@@ -97,6 +101,23 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
     });
 
     TokenStream::from(quote! { #(#expanded)* })
+}
+
+fn get_inner_type_from_option_vec(ty: &syn::Type) -> Option<syn::Type> {
+    let tp = if let syn::Type::Path(tp) = ty { tp } else { return None };
+    let seg = tp.path.segments.last()?;
+    
+    if seg.ident != "Option" { return None; }
+
+    if let syn::PathArguments::AngleBracketed(args) = &seg.arguments {
+        if let Some(syn::GenericArgument::Type(syn::Type::Path(inner_tp))) = args.args.first() {
+            let inner_seg = inner_tp.path.segments.last()?;
+            if inner_seg.ident == "Vec" {
+                return Some(syn::Type::Path(inner_tp.clone()));
+            }
+        }
+    }
+    None
 }
 
 fn strip_generics(ty: &Type) -> proc_macro2::TokenStream {
