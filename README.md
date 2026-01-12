@@ -1,5 +1,7 @@
 # micro
 
+[![Rust Tests](https://github.com/JodusMelodus/micro/actions/workflows/tests.yml/badge.svg)](https://github.com/JodusMelodus/micro/actions/workflows/tests.yml)
+
 `micro` is a lightweight Rust crate providing the `FromDTO` procedural macro. It simplifies the conversion between Data Transfer Objects (DTOs) and your internal domain models by automatically generating `From` trait implementations.
 
 ## Features
