@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput, Fields, Type, parse_macro_input};
+use syn::{Data, DeriveInput, Fields, PathArguments, Type, parse_macro_input};
 
 #[proc_macro_derive(FromDTO, attributes(from))]
 pub fn from_dto_derive(input: TokenStream) -> TokenStream {
@@ -18,6 +18,8 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
     }
     
     let expanded = from_types.iter().map(|from_type|{
+        let from_type_stripped = strip_generics(from_type);
+
         let body = match &input.data {
             Data::Struct(s) => {
                 let fields = if let Fields::Named(f) = &s.fields {
@@ -55,20 +57,20 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
                     
                     match &variant.fields {
                         Fields::Unit => {
-                            quote! { #from_type::#var_ident => Self::#var_ident }
+                            quote! { #from_type_stripped::#var_ident => Self::#var_ident }
                         }
                         Fields::Unnamed(fields) => {
                             let idents: Vec<_> = (0..fields.unnamed.len())
                                 .map(|i| quote::format_ident!("v{}", i))
                                 .collect();
                             quote! {
-                                #from_type::#var_ident(#(#idents),*) => Self::#var_ident(#(#idents.into()),*)
+                                #from_type_stripped::#var_ident(#(#idents),*) => Self::#var_ident(#(#idents.into()),*)
                             }
                         }
                         Fields::Named(fields) => {
                             let idents: Vec<_> = fields.named.iter().map(|f| &f.ident).collect();
                             quote! {
-                                #from_type::#var_ident { #(#idents),* } => Self::#var_ident { 
+                                #from_type_stripped::#var_ident { #(#idents),* } => Self::#var_ident { 
                                     #(#idents: #idents.into()),* }
                             }
                         }
@@ -95,6 +97,18 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
     });
 
     TokenStream::from(quote! { #(#expanded)* })
+}
+
+fn strip_generics(ty: &Type) -> proc_macro2::TokenStream {
+    if let Type::Path(tp) = ty {
+        let mut path = tp.path.clone();
+        for segment in &mut path.segments {
+            segment.arguments = PathArguments::None
+        }
+        quote!(#path)
+    } else {
+        quote!(#ty)
+    }
 }
 
 fn is_type_name(ty: &Type, name: &str) -> bool {
