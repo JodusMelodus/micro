@@ -1,24 +1,23 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput, Fields, Path, Type, parse_macro_input};
+use syn::{Data, DeriveInput, Fields, Type, parse_macro_input};
 
 #[proc_macro_derive(FromDTO, attributes(from))]
 pub fn from_dto_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = input.ident;
 
-    let from_paths = input
-        .attrs
-        .iter()
-        .filter(|a| a.path().is_ident("from"))
-        .filter_map(|a| a.parse_args::<Path>().ok())
-    .collect::<Vec<_>>();
+    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
-    if from_paths.is_empty() {
-        panic!("The #[from(path)] attribute is required for FromDTO");
+    let from_types = input.attrs.iter().filter(|a|a.path().is_ident("from"))
+        .filter_map(|a|a.parse_args::<Type>().ok())
+        .collect::<Vec<_>>();
+
+    if from_types.is_empty() {
+        panic!("The #[from(Type)] attribute is required for FromDTO");
     }
     
-    let expanded = from_paths.iter().map(|from_path|{
+    let expanded = from_types.iter().map(|from_type|{
         let body = match &input.data {
             Data::Struct(s) => {
                 let fields = if let Fields::Named(f) = &s.fields {
@@ -56,20 +55,20 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
                     
                     match &variant.fields {
                         Fields::Unit => {
-                            quote! { #from_path::#var_ident => Self::#var_ident }
+                            quote! { #from_type::#var_ident => Self::#var_ident }
                         }
                         Fields::Unnamed(fields) => {
                             let idents: Vec<_> = (0..fields.unnamed.len())
                                 .map(|i| quote::format_ident!("v{}", i))
                                 .collect();
                             quote! {
-                                #from_path::#var_ident(#(#idents),*) => Self::#var_ident(#(#idents.into()),*)
+                                #from_type::#var_ident(#(#idents),*) => Self::#var_ident(#(#idents.into()),*)
                             }
                         }
                         Fields::Named(fields) => {
                             let idents: Vec<_> = fields.named.iter().map(|f| &f.ident).collect();
                             quote! {
-                                #from_path::#var_ident { #(#idents),* } => Self::#var_ident { 
+                                #from_type::#var_ident { #(#idents),* } => Self::#var_ident { 
                                     #(#idents: #idents.into()),* }
                             }
                         }
@@ -87,8 +86,8 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
 
 
         quote! {
-            impl From<#from_path> for #name {
-                fn from(value: #from_path) -> Self {
+            impl #impl_generics From<#from_type> for #name #ty_generics #where_clause {
+                fn from(value: #from_type) -> Self {
                     #body
                 }
             }

@@ -168,3 +168,22 @@ fn multiple() {
     assert_eq!(dog1, real_dog1);
     assert_eq!(dog2, real_dog2);
 }
+
+#[test]
+fn generic() {
+    struct Gen1<T> {
+        a: T,
+    }
+
+    #[derive(FromDTO, PartialEq, Debug)]
+    #[from(Gen1<T>)]
+    struct Gen2<T> {
+        a: T,
+    }
+
+    let g1 = Gen1 { a: 5 };
+    let g2 = Gen2 { a: 5 };
+    let g: Gen2<i32> = g1.into();
+
+    assert_eq!(g2, g);
+}
