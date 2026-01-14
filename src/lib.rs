@@ -2,7 +2,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{Data, DeriveInput, Fields, PathArguments, Type, parse_macro_input};
 
-#[proc_macro_derive(FromDTO, attributes(from))]
+#[proc_macro_derive(FromDto, attributes(from))]
 pub fn from_dto_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = input.ident;
@@ -14,7 +14,7 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
         .collect::<Vec<_>>();
 
     if from_types.is_empty() {
-        panic!("The #[from(Type)] attribute is required for FromDTO");
+        panic!("The #[from(Type)] attribute is required for FromDto");
     }
     
     let expanded = from_types.iter().map(|from_type|{
@@ -25,7 +25,7 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
                 let fields = if let Fields::Named(f) = &s.fields {
                     &f.named
                 } else {
-                    panic!("FromDTO only supports structs with named fields");
+                    panic!("FromDto only supports structs with named fields");
                 };
 
                 let field_mappings = fields.iter().map(|f| {
@@ -87,7 +87,7 @@ pub fn from_dto_derive(input: TokenStream) -> TokenStream {
                     }
                 }
             }
-            _ => panic!("Unions are not supported by FromDTO")
+            _ => panic!("Unions are not supported by FromDto")
         };
 
 

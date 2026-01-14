@@ -2,7 +2,7 @@
 
 [![Rust Tests](https://github.com/JodusMelodus/micro/actions/workflows/tests.yml/badge.svg)](https://github.com/JodusMelodus/micro/actions/workflows/tests.yml)
 
-`micro` is a lightweight Rust crate providing the `FromDTO` procedural macro. It simplifies the conversion between Data Transfer Objects (DTOs) and your internal domain models by automatically generating `From` trait implementations.
+`micro` is a lightweight Rust crate providing the `FromDto` procedural macro. It simplifies the conversion between Data Transfer Objects (DTOs) and your internal domain models by automatically generating `From` trait implementations.
 
 ## Features
 
@@ -26,10 +26,10 @@ micro = "<version>" # Update <version> to latest
 ## Usage
 ### Basic Struct Conversion
 
-If field names match, `FromDTO` generates the boilerplate to convert from your DTO to your Domain model, calling `.into()` on every field to handle nested conversions.
+If field names match, `FromDto` generates the boilerplate to convert from your DTO to your Domain model, calling `.into()` on every field to handle nested conversions.
 
 ```rust
-use micro::FromDTO;
+use micro::FromDto;
 
 // The DTO (External Source)
 pub mod external {
@@ -40,7 +40,7 @@ pub mod external {
 }
 
 // The Domain Model
-#[derive(FromDTO)]
+#[derive(FromDto)]
 #[from(external::UserDTO)]
 pub struct User {
     pub id: i64,
@@ -52,7 +52,7 @@ pub struct User {
 The macro handles generic parameters and complex enum structures. It automatically strips generics from paths in match arms to ensure compatibility with stable Rust.
 
 ```rust
-#[derive(FromDTO)]
+#[derive(FromDto)]
 #[from(external::ApiResponse<T>)]
 pub enum Response<T> {
     Success(T),
@@ -62,10 +62,10 @@ pub enum Response<T> {
 ```
 
 ### Advanced Collections
-`FromDTO` detects `Vec` and `Option` types to ensure that inner types are converted correctly using the `.into_iter().map(...).collect()` pattern.
+`FromDto` detects `Vec` and `Option` types to ensure that inner types are converted correctly using the `.into_iter().map(...).collect()` pattern.
 
 ```rust
-#[derive(FromDTO)]
+#[derive(FromDto)]
 #[from(external::LibraryDTO)]
 pub struct Library {
     pub tags: Vec<String>,           // Handled via .collect()
@@ -73,10 +73,10 @@ pub struct Library {
 }
 ```
 ### Nested Collections (Option + Vec)
-Converting APIs often involves deeply nested optional collections, such as `Option<Vec<T>>`. Since Rust's `Into` trait does not automatically reach through multiple layers of containers, `FromDTO` detects these patterns and generates the necessary mapping code automatically.
+Converting APIs often involves deeply nested optional collections, such as `Option<Vec<T>>`. Since Rust's `Into` trait does not automatically reach through multiple layers of containers, `FromDto` detects these patterns and generates the necessary mapping code automatically.
 
 ```rust
-#[derive(FromDTO)]
+#[derive(FromDto)]
 #[from(external::TrackDTO)]
 pub struct Track {
     // Generates: value.contributors.map(|v| v.into_iter().map(Into::into).collect())
@@ -85,7 +85,7 @@ pub struct Track {
 ```
 
 ### How it Works
-The `FromDTO` macro inspects your struct or enum at compile time and generates a `From<Source>` implementation:
+The `FromDto` macro inspects your struct or enum at compile time and generates a `From<Source>` implementation:
 1. **Generic Splitting**: Uses `split_for_impl()` to ensure trait bounds like `impl<T> From<Source<T>>` for `Target<T>` are correctly declared.
 2. **Path Cleaning**: It strips generic arguments from enum variants specifically within match arms. This avoids the "qualified paths in this context is experimental" error on stable Rust.
-3. **Recursive Conversion**: It assumes that inner types also implement From (or are decorated with `FromDTO`) and chains them using `.into()`.
+3. **Recursive Conversion**: It assumes that inner types also implement From (or are decorated with `FromDto`) and chains them using `.into()`.

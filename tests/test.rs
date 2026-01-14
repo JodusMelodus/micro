@@ -1,4 +1,4 @@
-use micro::FromDTO;
+use micro::FromDto;
 
 #[test]
 fn basic_conversion() {
@@ -7,7 +7,7 @@ fn basic_conversion() {
         age: u8,
     }
 
-    #[derive(FromDTO, PartialEq, Debug)]
+    #[derive(FromDto, PartialEq, Debug)]
     #[from(Test1)]
     struct Test2 {
         name: String,
@@ -36,7 +36,7 @@ fn conversion_with_vec() {
         age: u8,
     }
 
-    #[derive(FromDTO, PartialEq, Debug)]
+    #[derive(FromDto, PartialEq, Debug)]
     #[from(Test1)]
     struct Test2 {
         names: Vec<String>,
@@ -65,7 +65,7 @@ fn conversion_with_primitive_vec() {
         age: Vec<u8>,
     }
 
-    #[derive(FromDTO, PartialEq, Debug)]
+    #[derive(FromDto, PartialEq, Debug)]
     #[from(Test1)]
     struct Test2 {
         names: String,
@@ -104,14 +104,14 @@ fn enum_conversion() {
     });
 
 
-    #[derive(FromDTO, PartialEq, Debug)]
+    #[derive(FromDto, PartialEq, Debug)]
     #[from(Cat1)]
     struct Cat2 {
         name: String,
         age: u8,
     }
 
-    #[derive(FromDTO, PartialEq, Debug)]
+    #[derive(FromDto, PartialEq, Debug)]
     #[from(Animal1)]
     enum Animal2 {
         Cat(Cat2),
@@ -137,7 +137,7 @@ fn multiple() {
         id: i32,
     }
 
-    #[derive(FromDTO, PartialEq, Debug)]
+    #[derive(FromDto, PartialEq, Debug)]
     #[from(Dog1)]
     #[from(Dog2)]
     struct Dog {
@@ -162,7 +162,7 @@ fn generic() {
         a: T,
     }
 
-    #[derive(FromDTO, PartialEq, Debug)]
+    #[derive(FromDto, PartialEq, Debug)]
     #[from(Gen1<T>)]
     struct Gen2<T> {
         a: T,
@@ -181,7 +181,7 @@ fn option_vec() {
         a: Option<Vec<u8>>,
     }
 
-    #[derive(FromDTO, PartialEq, Debug)]
+    #[derive(FromDto, PartialEq, Debug)]
     #[from(A)]
     struct B {
         a: Option<Vec<u16>>,
