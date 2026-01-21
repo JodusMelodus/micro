@@ -2,6 +2,15 @@
 
 [![Rust Tests](https://github.com/JodusMelodus/micro/actions/workflows/tests.yml/badge.svg)](https://github.com/JodusMelodus/micro/actions/workflows/tests.yml)
 
+[![GitHub stars](https://img.shields.io/github/stars/JodusMelodus/minmath)](https://github.com/JodusMelodus/micro/stargazers)
+[![GitHub license](https://img.shields.io/github/license/JodusMelodus/micro)](https://github.com/JodusMelodus/micro/LICENSE.md)
+
+[![Crates.io](https://img.shields.io/crates/v/micro.svg)](https://crates.io/crates/micro)
+[![Crates.io downloads](https://img.shields.io/crates/d/micro.svg)](https://crates.io/crates/micro)
+[![Docs.rs](https://docs.rs/minmath/badge.svg)](https://docs.rs/micro)
+
+[![Rust Version](https://img.shields.io/badge/rust-1.70%2B-blue)](https://www.rust-lang.org/)
+
 `micro` is a lightweight Rust crate providing the `FromDto` procedural macro. It simplifies the conversion between Data Transfer Objects (DTOs) and your internal domain models by automatically generating `From` trait implementations.
 
 ## Features
