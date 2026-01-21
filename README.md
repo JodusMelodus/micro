@@ -42,7 +42,7 @@ use micro::FromDto;
 
 // The DTO (External Source)
 pub mod external {
-    pub struct UserDTO {
+    pub struct UserDto {
         pub id: i64,
         pub username: String,
     }
@@ -50,7 +50,7 @@ pub mod external {
 
 // The Domain Model
 #[derive(FromDto)]
-#[from(external::UserDTO)]
+#[from(external::UserDto)]
 pub struct User {
     pub id: i64,
     pub username: String,
@@ -75,7 +75,7 @@ pub enum Response<T> {
 
 ```rust
 #[derive(FromDto)]
-#[from(external::LibraryDTO)]
+#[from(external::LibraryDto)]
 pub struct Library {
     pub tags: Vec<String>,           // Handled via .collect()
     pub metadata: Option<Metadata>,  // Handled via .map(Into::into)
@@ -86,7 +86,7 @@ Converting APIs often involves deeply nested optional collections, such as `Opti
 
 ```rust
 #[derive(FromDto)]
-#[from(external::TrackDTO)]
+#[from(external::TrackDto)]
 pub struct Track {
     // Generates: value.contributors.map(|v| v.into_iter().map(Into::into).collect())
     pub contributors: Option<Vec<Artist>>, 
