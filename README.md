@@ -2,7 +2,7 @@
 
 [![Rust Tests](https://github.com/JodusMelodus/micro/actions/workflows/tests.yml/badge.svg)](https://github.com/JodusMelodus/micro/actions/workflows/tests.yml)
 
-[![GitHub stars](https://img.shields.io/github/stars/JodusMelodus/minmath)](https://github.com/JodusMelodus/micro/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/JodusMelodus/micro)](https://github.com/JodusMelodus/micro/stargazers)
 [![GitHub license](https://img.shields.io/github/license/JodusMelodus/micro)](https://github.com/JodusMelodus/micro/LICENSE.md)
 
 [![Crates.io](https://img.shields.io/crates/v/micro.svg)](https://crates.io/crates/micro)
