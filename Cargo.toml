@@ -1,6 +1,6 @@
 [package]
 name = "micro"
-version = "0.1.10"
+version = "0.1.11"
 edition = "2024"
 authors = ["JodusMelodus"]
 description = "Playground for macros which may result in a useful macro"
